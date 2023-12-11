@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>访问 Map</title>
+    <link rel="stylesheet" href="./8.2.0/theme/ol.css">
+    <script src="./8.2.0/en/latest/ol/dist/ol.js"></script>
+</head>
+
+<body>
+    <div id="map" style="height: 600px; border: 6px solid;"></div>
+
+    <script>
+        const url =
+            'https://sampleserver6.arcgisonline.com/ArcGIS/rest/services/' +
+            'USA/MapServer';
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                new ol.layer.Image({
+                    source: new ol.source.ImageArcGISRest({
+                        ratio: 1,
+                        params: {},
+                        url: url,
+                    }),
+                }),
+            ],
+            view: new ol.View({
+                center: [-10997148, 4569099],
+                zoom: 4,
+            })
+        });
+    </script>
+</body>
+
+</html>
