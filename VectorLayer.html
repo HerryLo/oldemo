@@ -12,24 +12,23 @@
 
 <body>
     <div id="map" style="height: 600px; border: 6px solid;"></div>
-
+    <div id="info">&nbsp;</div>
     <script>
-        const url =
-            'https://sampleserver6.arcgisonline.com/ArcGIS/rest/services/' +
-            'USA/MapServer';
+        const vectorLayer = new ol.layer.Vector({
+            background: '#1a2b39',
+            source: new ol.source.Vector({
+                url: 'https://openlayers.org/data/vector/ecoregions.json',
+                // url: 'https://geo.datav.aliyun.com/areas_v2/bound/100000_full.json',
+                format: new ol.format.GeoJSON(),
+            }),
+            style: {
+                'fill-color': ['string', ['get', 'COLOR'], '#eee'],
+            }
+        })
         let map = new ol.Map({
             target: 'map',
             layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                }),
-                new ol.layer.Image({
-                    source: new ol.source.ImageArcGISRest({
-                        ratio: 1,
-                        params: {},
-                        url: url,
-                    }),
-                }),
+                vectorLayer
             ],
             view: new ol.View({
                 center: [-10997148, 4569099],

@@ -14,26 +14,21 @@
     <div id="map" style="height: 600px; border: 6px solid;"></div>
 
     <script>
-        const url =
-            'https://sampleserver6.arcgisonline.com/ArcGIS/rest/services/' +
-            'USA/MapServer';
         let map = new ol.Map({
             target: 'map',
             layers: [
                 new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                }),
-                new ol.layer.Image({
-                    source: new ol.source.ImageArcGISRest({
-                        ratio: 1,
-                        params: {},
-                        url: url,
-                    }),
+                    // source: new ol.source.OSM()
+                    source: new ol.source.BingMaps({
+                        key: 'Aud1dM5V1tT5Yvg2uX8Hp5ftaZZ4stEuJZ8i7IO1KSyLFj9A4UuamHK6_tUKEcGe',    
+                        imagerySet: 'AerialWithLabels'  // 指定加载的图层名，还可以替换为'Aerial'或'Road'
+                    })
                 }),
             ],
             view: new ol.View({
-                center: [-10997148, 4569099],
-                zoom: 4,
+                center: [116.39, 39.91],
+                zoom: 8,
+                projection:'EPSG:4326'
             })
         });
     </script>
