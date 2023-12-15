@@ -46,7 +46,7 @@
             console.log(e);
         })
 
-        // 创建Style风格
+        // 创建Style样式
         const iconStyle = new ol.style.Style({
             image: new ol.style.Icon({
                 anchor: [0.5, 0.5],
@@ -55,7 +55,9 @@
                 width: 50
             }),
             text: new ol.style.Text({
-                text: '99'
+                text: '点标记',
+                offsetY: -35,
+                fill: new ol.style.Fill({ color: '#c6287b' })
             })
         })
         // 创建Feature要素
@@ -69,21 +71,21 @@
             return Feature;
         })
         // 创建Vector图层
-        const VectorLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                features: features
-            })
+        const vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            // style: iconStyle
         })
+        features.forEach((item) => vectorLayer.getSource().addFeature(item))
+        map.addLayer(vectorLayer);
         // 点标注点击
         map.on('click', (evt) => {
             const Feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
                 return feature
             })
-            if(Feature && Feature.get('name') === 'Marker') {
+            if (Feature && Feature.get('name') === 'Marker') {
                 console.log('Marker点标注');
             }
         })
-        map.addLayer(VectorLayer);
     </script>
 </body>
 

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>点聚合 Map</title>
+    <link rel="stylesheet" href="./8.2.0/theme/ol.css">
+    <script src="./8.2.0/en/latest/ol/dist/ol.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css"> -->
+</head>
+
+<body>
+    <div id="map" style="height: 95vh; border: 6px solid;"></div>
+
+    <script>
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    // source: new ol.source.OSM()
+                    source: new ol.source.BingMaps({
+                        key: 'Aud1dM5V1tT5Yvg2uX8Hp5ftaZZ4stEuJZ8i7IO1KSyLFj9A4UuamHK6_tUKEcGe',
+                        imagerySet: 'Road'  // 指定加载的图层名，还可以替换为'AerialWithLabels' 'Aerial'或'Road'
+                    })
+                }),
+            ],
+            view: new ol.View({
+                center: [116.39, 39.91],
+                zoom: 11,
+                projection: 'EPSG:4326'
+            })
+        });
+        // 地图点击事件
+        map.on('click', (e) => {
+            console.log(e);
+        })
+
+        // 矢量数据
+        const source = new ol.source.Vector();
+        for (let i = 0; i < 200; i++) {
+            const coordinate = [116.39 + Math.random(), 39.91 + Math.random()];
+            const Feature = new ol.Feature(new ol.geom.Point(coordinate));
+            source.addFeature(Feature);
+        }
+        for (let i = 0; i < 200; i++) {
+            const coordinate = [116.40 + Math.random(), 39.92 + Math.random()];
+            const Feature = new ol.Feature(new ol.geom.Point(coordinate));
+            source.addFeature(Feature);
+        }
+        // 聚合数据
+        const Cluster = new ol.source.Cluster({
+            source: source,
+            distance: 100
+        })
+
+        const Style = (options) => new ol.style.Style(options);
+        const Fill = (options) => new ol.style.Fill(options);
+        const Circle = (options) => new ol.style.Circle(options);
+        const Text = (options) => new ol.style.Text(options);
+        const Stroke = (options) => new ol.style.Stroke(options);
+        const Icon = (options) => new ol.style.Icon(options);
+        // 创建聚合Style
+        const createClusterStyle = (size) => {
+            console.log(size);
+            return Style({
+                image: Circle({
+                    radius: 30,
+                    stroke: Stroke({
+                        color: '#fff'
+                    }),
+                    fill: Fill({
+                        color: 'rgba(0,0,0, 0.7)'
+                    })
+                }),
+                text: Text({
+                    color: '#fff',
+                    font: '14px sans-serif',
+                    text: size.toString(),
+                    fill: Fill({
+                        color: '#fff'
+                    })
+                })
+            })
+        }
+        // 创建Marker Style
+        const createMarkerStyle = (size) => {
+            return Style({
+                image: Icon({
+                    anchor: [0.5, 0.5],
+                    color: 'red',
+                    src: './img/point.png',
+                    width: 50
+                })
+            })
+        }
+        // 创建Vector图层
+        const vectorLayer = new ol.layer.Vector({
+            source: Cluster,
+            style: (feature) => {
+                const len = feature.get('features').length;
+                return len > 1 ? createClusterStyle(len) : createMarkerStyle(len);
+            }
+        })
+        map.addLayer(vectorLayer);
+        // 点标注点击
+        map.on('click', (evt) => {
+            const Feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                return feature
+            })
+            if (Feature && Feature.get('name') === 'Marker') {
+                console.log('Marker点标注');
+            }
+        })
+    </script>
+</body>
+
+</html>
