@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>点聚合 Map</title>
+    <link rel="stylesheet" href="./8.2.0/theme/ol.css">
+    <script src="./8.2.0/en/latest/ol/dist/ol.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css"> -->
+    <style>
+        #infowindow {
+            background: rgba(0, 0, 0, 0.66);
+            border-radius: 5px;
+            padding: 5px;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" style="height: 95vh; border: 6px solid;"></div>
+    <div id="infowindow"></div>
+
+    <script>
+        const coordinate = [
+            [
+                116.28288330078125,
+                39.91595224314723
+            ],
+            [
+                116.49848999023439,
+                39.881633003379434
+            ]
+        ]
+        const url = 'https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}'
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: url
+                    })
+                })
+            ],
+            view: new ol.View({
+                center: [116.39, 39.91],
+                zoom: 11,
+                projection: 'EPSG:4326'
+            })
+        });
+        // 地图点击事件
+        map.on('click', (e) => {
+            console.log(e);
+        })
+
+        const element = document.getElementById('infowindow');
+        let infowindow = null;
+
+        // 创建Style样式
+        const iconStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 0.5],
+                color: 'blue',
+                src: './img/point.png',
+                width: 30
+            }),
+            text: new ol.style.Text({
+                text: '点标记',
+                offsetY: -25,
+                fill: new ol.style.Fill({ color: 'blue' })
+            })
+        })
+        // 创建Feature要素
+        const features = coordinate.map((item) => {
+            const Feature = new ol.Feature({
+                // 创建geometry
+                geometry: new ol.geom.Point(item),
+                name: 'Marker'
+            })
+            Feature.positon = item;
+            return Feature;
+        })
+        // 创建Vector图层
+        const vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: iconStyle
+        })
+        features.forEach((item) => vectorLayer.getSource().addFeature(item))
+        map.addLayer(vectorLayer);
+        // 点标注点击
+        map.on('click', (evt) => {
+            const Feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                return feature
+            })
+            if (Feature && Feature.get('name') === 'Marker') {
+                console.log('Marker点标注', Feature);
+                const positon = Feature.positon;
+                if (!infowindow) {
+                    addInfoWindow(positon);
+                } else {
+                    element.innerHTML = positon.toString();
+                    infowindow.setPosition(positon);
+                }
+
+            }
+        })
+        // 以上是点标记代码
+
+        function addInfoWindow(positon) {
+            infowindow = new ol.Overlay({
+                element: element,
+                autoPan: true,
+                positioning: 'bottom-center',
+                stopEvent: false,
+                offset: [0, -32],
+                autoPanAnimation: { duration: 250 }
+            })
+            map.addOverlay(infowindow);
+            element.innerHTML = positon.toString();
+            infowindow.setPosition(positon);
+        }
+
+    </script>
+</body>
+
+</html>

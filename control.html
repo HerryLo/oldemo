@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>访问 Map</title>
+    <link rel="stylesheet" href="./8.2.0/theme/ol.css">
+    <script src="./8.2.0/en/latest/ol/dist/ol.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css"> -->
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="map" style="height: 600px; border: 6px solid;"></div>
+    <div>当前地图中心：<i id="center">116.39, 39.91</i></div>
+    <div>当前缩放级别：<i id="zoom">10</i></div>
+
+    <script>
+        const url = 'https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}'
+        // const url1 = 'https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
+
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: url
+                    })
+                })
+                // new ol.layer.Image({
+                //     source: new ol.source.ImageArcGISRest({
+                //         ratio: 1,
+                //         params: {},
+                //         url: url1,
+                //     }),
+                // }),
+
+            ],
+            view: new ol.View({
+                center: [116.39, 39.91],
+                zoom: 10,
+                projection: 'EPSG:4326'
+            }),
+            controls: ol.control.defaults.defaults().extend([
+                // 比例尺
+                new ol.control.ScaleLine(),
+                // 全屏
+                new ol.control.FullScreen(),
+                // 缩放滑块
+                new ol.control.ZoomSlider(),
+                // 旋转
+                new ol.control.Rotate({ autoHide: false }),
+                // 鹰眼
+                new ol.control.OverviewMap({
+                    layers: [
+                        new ol.layer.Tile({
+                            source: new ol.source.XYZ({
+                                url: url
+                            })
+                        })
+                    ],
+                    view: new ol.View({
+                        projection: 'EPSG:4326'
+                    })
+                })
+            ])
+        });
+        const centerText = document.getElementById('center');
+        const zoomText = document.getElementById('zoom');
+        map.on('moveend', function (e) {
+            centerText.innerText = map.getView().getCenter()
+            zoomText.innerText = map.getView().getZoom()
+        });
+        window.map2d = map;
+    </script>
+</body>
+
+</html>
