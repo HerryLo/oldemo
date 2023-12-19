@@ -23,16 +23,6 @@
     <div id="infowindow"></div>
 
     <script>
-        const coordinate = [
-            [
-                116.28288330078125,
-                39.91595224314723
-            ],
-            [
-                116.49848999023439,
-                39.881633003379434
-            ]
-        ]
         const url = 'https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}'
         let map = new ol.Map({
             target: 'map',
@@ -54,9 +44,19 @@
             console.log(e);
         })
 
+
         const element = document.getElementById('infowindow');
         let infowindow = null;
-
+        const coordinate = [
+            [
+                116.28288330078125,
+                39.91595224314723
+            ],
+            [
+                116.49848999023439,
+                39.881633003379434
+            ]
+        ]
         // 创建Style样式
         const iconStyle = new ol.style.Style({
             image: new ol.style.Icon({
@@ -107,6 +107,7 @@
         })
         // 以上是点标记代码
 
+        // 创建覆盖物
         function addInfoWindow(positon) {
             infowindow = new ol.Overlay({
                 element: element,
