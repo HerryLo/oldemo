@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>访问 Map</title>
+    <link rel="stylesheet" href="./8.2.0/theme/ol.css">
+    <script src="./8.2.0/en/latest/ol/dist/ol.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css"> -->
+</head>
+
+<body>
+    <div id="map" style="height: 95vh; border: 6px solid;"></div>
+
+    <script>
+        const coordinate = [
+            [
+                116.38390602111816,
+                39.91933196682435
+            ],
+            [
+                116.40862525939941,
+                39.89048282729144
+            ]
+        ]
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    // source: new ol.source.OSM()
+                    source: new ol.source.BingMaps({
+                        key: 'Aud1dM5V1tT5Yvg2uX8Hp5ftaZZ4stEuJZ8i7IO1KSyLFj9A4UuamHK6_tUKEcGe',
+                        imagerySet: 'Road'  // 指定加载的图层名，还可以替换为'AerialWithLabels' 'Aerial'或'Road'
+                    })
+                }),
+            ],
+            view: new ol.View({
+                center: [116.39, 39.91],
+                zoom: 13,
+                projection: 'EPSG:4326'
+            })
+        });
+
+        // 创建Style样式
+        const lineStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#3399CC',
+                width: 6,
+            }),
+        })
+        // 创建Feature要素
+        const feature = new ol.Feature({
+            // 创建geometry
+            geometry: new ol.geom.LineString(coordinate),
+            name: 'Line'
+        })
+        // 创建Vector图层
+        const vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [feature]
+            }),
+            style: lineStyle
+        })
+        map.addLayer(vectorLayer);
+        // Point矢量点点击
+        map.on('click', (evt) => {
+            const Feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                return feature
+            })
+            if (Feature && Feature.get('name') === 'Point') {
+                console.log('Point');
+            }
+        })
+    </script>
+</body>
+
+</html>
